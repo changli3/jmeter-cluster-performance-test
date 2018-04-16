@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion : 2010-09-09
-Description: Jmeter Tesst Console by chang.li3@treasury.gov
+Description: EC2 Jmeter Stress Test Controller by chang.li3@treasury.gov
 Parameters:
   Ami:
     Type: String
