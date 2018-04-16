@@ -1,0 +1,18 @@
+east_count: 1
+west_count: 1
+
+ec2_tag_Name: "JmeterNode"
+ec2_volume_size: 16
+ec2_instance_type: "t2.small"
+
+east_ec2_keypair: "TreaEBSLab"
+east_ec2_security_group: "sg-58e1fc3d"
+east_ec2_image: "ami-43a15f3e"
+east_ec2_subnet_ids: ['subnet-2b976000']
+east_ec2_region: "us-east-1"
+
+west_ec2_keypair: "TreaEBSLab"
+west_ec2_security_group: "sg-58e1fc3d"
+west_ec2_image: "ami-43a15f3e"
+west_ec2_subnet_ids: ['subnet-2b976000']
+west_ec2_region: "us-east-1"

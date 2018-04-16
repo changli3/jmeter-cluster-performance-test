@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion : 2010-09-09
+Description: Jmeter Tesst Console by chang.li3@treasury.gov
+Parameters:
+  Ami:
+    Type: String
+    Default: ami-43a15f3e
+    Description: Please provide an AWS Ubuntu image id
+  InstanceTypeParameter:
+    Type: String
+    Default: t2.medium
+  InstanceSubnet:
+    Type: String
+    Default: subnet-2b976000
+  SecurityGroupId:
+    Type: String
+    Default: sg-58e1fc3d
+  InstanceKeyPairParameter:
+    Type: String
+    Default: TreaEBSLab
+    Description: Name of the KeyPair you choose to use to ssh into the box    
+  allowIPs:
+    Type: String
+  newBucketName:
+    Type: String
+
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Ref: newBucketName
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+    DeletionPolicy: Retain
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DependsOn: S3Bucket
+    Properties:
+      PolicyDocument:
+        Id: MyPolicy
+        Version: '2012-10-17'
+        Statement:
+        - Sid: PublicReadForGetBucketObjects
+          Effect: Allow
+          Principal: "*"
+          Action: s3:GetObject
+          Resource:
+            Fn::Join:
+            - ''
+            - - 'arn:aws:s3:::'
+              - Ref: S3Bucket
+              - "/*"
+          Condition:
+            IpAddress:
+              aws:SourceIp:
+                Ref: allowIPs
+      Bucket:
+        Ref: S3Bucket
+  JmeterController:
+    Type: AWS::EC2::Instance
+    DependsOn: S3Bucket
+    Properties:
+      ImageId:
+        Ref: Ami
+      KeyName:
+        Ref: InstanceKeyPairParameter
+      InstanceType:
+        Ref: InstanceTypeParameter
+      SecurityGroupIds:
+        - !Ref SecurityGroupId
+      SubnetId:
+        Ref: InstanceSubnet
+      Tags:
+        -
+          Key: Name
+          Value: JmeterController
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          curl -s -L https://raw.githubusercontent.com/changli3/jmeter-cluster-performance-test/master/install-controller.sh | sudo bash -s ${newBucketName}
