@@ -1,0 +1,9 @@
+---
+ - hosts: localhost
+   connection: local
+   gather_facts: false
+   user: ubuntu
+   pre_tasks:
+    - include_vars: ec2_vars/config.yml
+   roles:
+    - provision-ec2-jmeters

@@ -10,3 +10,7 @@ ec2_image: "ami-43a15f3e"
 ec2_subnet_ids: ['subnet-2b976000']
 ec2_region: "us-east-1"
 ec2_instance_profile_name: "PROFILE"
+
+ec2_user_data: |
+    #!/bin/bash -xe 
+     curl -s -L https://raw.githubusercontent.com/changli3/jmeter-cluster-performance-test/master/install-node.sh

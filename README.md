@@ -7,7 +7,7 @@ This is has been done for quite some time and I'm still try to locate and clean 
 ![Architect](https://raw.githubusercontent.com/changli3/jmeter-cluster-performance-test/master/jmeter-cluster-performance-test.png "Architect")
 
 ```
-aws cloudformation deploy --stack-name JmeterController01 --template-file cf.yml --parameter-overrides  allowIPs="0.0.0.0/0" --capabilities CAPABILITY_IAM
+aws cloudformation deploy --stack-name jmetercontroller01 --template-file cf.yml --parameter-overrides  allowIPs="0.0.0.0/0" --capabilities CAPABILITY_IAM
 ```
 Now you can logon to the controller. You have to do the following setups manually:
 
@@ -29,31 +29,64 @@ ssh-add ~/.ssh/keypair.pem
 
 ### Step 3. Starts the Jmeter Nodes
 ```
-ansible-playbook -i localhost start-jmeter.yml
+ansible-playbook -i localhost provision-jmeter.yml
 ```
 
-### Step 5. Build the Inventory
+### Step 4. Build the Ansible Host Inventory
 ```
 ./ec2.py --refresh-cache
 ```
 
-### Step 6. Test the connection
+### Step 5. Test the connection
 ```
-ansible -i ec2.py tag_Name_JmeterNode -m ping --private-key=~/.ssh/keypair.pem -u ec2-user
+ansible -i ec2.py tag_Name_JmeterNode -m ping --private-key=~/.ssh/keypair.pem -u ubuntu
 ```
 
 If everything works, you should get something like this -
 ![ping](https://raw.githubusercontent.com/changli3/jmeter-cluster-performance-test/master/ping.png "ping")
-### Step 7. Provision Jmeter
 
+### Step 6. Provision Jmeter Test Script
+Put your Jmeter test script (jmx file) to the server, and copy it to all the nodes with following command -
+```
+./provision-task.sh YOU-FILE.jmx
+```
 
-### Step 8. Provision Jmeter Test Script
+### Step 7. Run the Test
+Start the performance test with the following command, where duration is in seconds -
+```
+./start-task-controller.sh TEST-NAME DURATION-LENGTH
+```
 
+### Step 8. Stop the Test
+If you need to stop the test in the middle before it finishes -
+```
+./kill-task-controller.sh
+```
 
-### Step 9. Run the test
+### Step 9. Check the Dashboard Report
+It is in the S3 bucket and is organized as:
+```
+Bucket
+  Test Name
+    Machine Name
+	  index.html
+	  ...
+	   ...
+```
 
+### Step 10. To Stop all Jmeter Nodes
+```
+ansible-playbook -i ./ec2.py stop-jmeter.yml
+```
 
-### Step 10. Run the test
+### Step 11. To Start all Jmeter Nodes after Stop
+```
+ansible-playbook -i ./ec2.py start-jmeter.yml
+```
 
-### Step 11. Shut down then system
+### Step 12. To Terminate all Jmeter Nodes
+```
+ansible-playbook -i ./ec2.py terminate-jmeter.yml
+```
+
 

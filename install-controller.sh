@@ -18,3 +18,7 @@ echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 echo "$1-report" > ./s3bucket
 
 sed -i "s/PROFILE/$2/" ec2_vars/config.yml
+chmod +x start-task-controller.sh
+chmod +x provision-task.sh
+chmod +x provision-task.sh
+chmod +x kill-task-controller.sh

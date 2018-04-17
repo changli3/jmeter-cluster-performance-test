@@ -3,4 +3,4 @@
    connection: local
    gather_facts: false
    roles:
-    - start-ec2-jmeters
+    - stop-ec2-jmeters

@@ -1,7 +1,7 @@
 
 ---
- - name: Start Jmeter Nodes
+ - name: Stop Jmeter Nodes
    local_action:
     instance_tags:
         Name: JmeterNode
-    state: running
+    state: stopped

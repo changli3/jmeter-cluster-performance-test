@@ -112,6 +112,8 @@ Resources:
         Ref: InstanceKeyPairParameter
       InstanceType:
         Ref: InstanceTypeParameter
+      IamInstanceProfile:
+        Ref: HostProfile
       SecurityGroupIds:
         - !Ref SecurityGroupId
       SubnetId:
