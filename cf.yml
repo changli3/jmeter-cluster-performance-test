@@ -20,20 +20,18 @@ Parameters:
     Description: Name of the KeyPair you choose to use to ssh into the box    
   allowIPs:
     Type: String
-  newBucketName:
-    Type: String
 
 Resources:
   S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName:
-        Ref: newBucketName
+        Fn::Sub: ${AWS::StackName}-reports
       AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: error.html
-    DeletionPolicy: Retain
+    DeletionPolicy: Delete
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
     DependsOn: S3Bucket
@@ -58,9 +56,55 @@ Resources:
                 Ref: allowIPs
       Bucket:
         Ref: S3Bucket
+
+  HostRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+            - s3.amazonaws.com
+            - cloudformation.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Policies:
+      - PolicyName:
+          Fn::Sub: ${AWS::StackName}-S3
+        PolicyDocument:
+          Statement:
+          - Action: s3:*
+            Resource: !GetAtt S3Bucket.Arn
+            Effect: Allow
+      - PolicyName:
+          Fn::Sub: ${AWS::StackName}-CF
+        PolicyDocument:
+          Statement:
+          - Action: cloudformation:*
+            Resource: "*"
+            Effect: Allow
+      - PolicyName:
+          Fn::Sub: ${AWS::StackName}-EC2
+        PolicyDocument:
+          Statement:
+          - Action:
+            - ec2:*
+            Resource: "*"
+            Effect: Allow
+
+  HostProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+      - Ref: HostRole
+
   JmeterController:
     Type: AWS::EC2::Instance
-    DependsOn: S3Bucket
+    DependsOn:
+    - S3Bucket
+    - HostProfile
     Properties:
       ImageId:
         Ref: Ami
@@ -79,4 +123,4 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash -xe
-          curl -s -L https://raw.githubusercontent.com/changli3/jmeter-cluster-performance-test/master/install-controller.sh | sudo bash -s ${newBucketName}
+          curl -s -L https://raw.githubusercontent.com/changli3/jmeter-cluster-performance-test/master/install-controller.sh | sudo bash -s ${AWS::StackName} "${HostProfile}"

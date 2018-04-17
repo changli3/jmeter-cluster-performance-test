@@ -7,7 +7,7 @@ This is has been done for quite some time and I'm still try to locate and clean 
 ![Architect](https://raw.githubusercontent.com/changli3/jmeter-cluster-performance-test/master/jmeter-cluster-performance-test.png "Architect")
 
 ```
-aws cloudformation deploy --stack-name JmeterController01 --template-file cf.yml --parameter-overrides  newBucketName=myprfoutputs-001 allowIPs="0.0.0.0/0" 
+aws cloudformation deploy --stack-name JmeterController01 --template-file cf.yml --parameter-overrides  allowIPs="0.0.0.0/0" --capabilities CAPABILITY_IAM
 ```
 Now you can logon to the controller. You have to do the following setups manually:
 
@@ -21,30 +21,13 @@ ssh-agent bash
 ssh-add ~/.ssh/keypair.pem 
 ```
 
-Disable 
-```
-sudo vi /etc/ssh/ssh_config
-```
-
-Find "StrictHostKeyChecking" and set
-```
-StrictHostKeyChecking no
-```
-
-
-### Step 2. Prepare AWS Configuration
-Run AWS configure to configure your controller
-```
-aws configure
-```
-
-### Step 3. Revise the Ansible Playbook
+### Step 2. Revise the Ansible Playbook
 * The variables are in ./jmeter-cluster-performance-test/ec2_vars/config.yml
 * Set multiple regions in ~/ec2.ini
 * If you need to use public IP, you need to update ~/ec2.ini to reflect this. In my environment, all my VPCs are inter-connected with VPN tunnels.
 
 
-### Step 4. Starts the Jmeter Nodes
+### Step 3. Starts the Jmeter Nodes
 ```
 ansible-playbook -i localhost start-jmeter.yml
 ```
