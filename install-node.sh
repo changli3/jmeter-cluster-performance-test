@@ -11,3 +11,10 @@ chmod +x kill-task-node.sh
 
 wget http://mirror.stjschools.org/public/apache//jmeter/binaries/apache-jmeter-4.0.tgz
 tar zxvf apache-jmeter-4.0.tgz
+
+#increase limits
+echo "
+ubuntu soft nofile 65536
+ubuntu hard nofile 65536
+ubuntu soft memlock unlimited
+ubuntu hard memlock unlimited" | sudo tee -a /etc/security/limits.conf
