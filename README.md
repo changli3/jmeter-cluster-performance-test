@@ -89,4 +89,6 @@ ansible-playbook -i ./ec2.py start-jmeter.yml
 ansible-playbook -i ./ec2.py terminate-jmeter.yml
 ```
 
+### Missing Parts
+I have the CloudWatch Dashboard set up to monitor the CPU and Network I/O for all the instances. I set up manually but have to turn them into scripts. So it's still missing here...
 
