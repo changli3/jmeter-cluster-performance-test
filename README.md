@@ -64,7 +64,7 @@ If you need to stop the test in the middle before it finishes -
 ```
 
 ### Step 9. Check the Dashboard Report
-It is in the S3 bucket and is organized as:
+After the test, the Dashboard Reports are in the S3 bucket and are organized as. The reports should be viewable from the allowedIPs when you start the CloudFormation template.
 ```
 Bucket
   Test Name
